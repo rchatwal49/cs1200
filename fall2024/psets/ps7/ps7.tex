@@ -1,19 +1,21 @@
 \documentclass[11pt]{article}
 \usepackage{classTools}
 \usepackage[normalem]{ulem}
+\usepackage{cancel}
+\usepackage{ulem}
 
 \begin{document}
 
 % To include a problems set header, use the psHeader command
 \psHeader{7}{Wed Nov. 13, 2024 (11:59pm)}
 
-\textbf{Your name: }
+\textbf{Your name: Roshen Chatwal}
 
-\textbf{Collaborators: }
+\textbf{Collaborators: just went to OH}
 
-\textbf{No. of late days used on previous psets: }
+\textbf{No. of late days used on previous psets: 2}
 
-\textbf{No. of late days used after including this pset: }
+\textbf{No. of late days used after including this pset: 2}
 
 
 The purpose of this problem set is to develop skills in implementing graph algorithms, appreciate the impact of different kinds of worst-case exponential algorithms in practice, and practice reducing problems to SAT.
@@ -24,9 +26,10 @@ The purpose of this problem set is to develop skills in implementing graph algor
   
   \begin{enumerate}
       
-      \item Implement the reduction from 3-coloring to SAT given in class in the function \texttt{sat\_3\_coloring}, producing an input that can be fed into the SAT Solver \href{https://pysathq.github.io/usage/}{Glucose}, and verify its correctness by running \texttt{python3 -m ps7\_tests 3}. \label{part:SAT}
+      \item Implement the reduction from 3-coloring to SAT given in class in the function \texttt{sat\_3\_coloring}, producing an input that can be fed into the SAT Solver \href{https://pysathq.github.io/usage/}{Glucose}, and verify its correctness by running \texttt{python3 -m ps7\_tests 3}. \label{part:SAT} \\
 
-     
+      \textcolor{blue}{Done in code} \\
+
       \item Compare the efficiency of Exhaustive-Search 3-coloring, the $O(1.45^n)$-time MaximalIS+2COL algorithm for 3-coloring from problem set 5 (feel free to use the staff solution or your own implementations from problem set 5), and your implementation from  Part~\ref{part:SAT} using \texttt{ps7\_experiments}. In the experiments file, we've provided code to generate two types of graphs (lines of rings and clusters of independent sets) and some new hard graph instances. For each of those types of graphs, how many of the given instances, if any, can each algorithm solve within 10 seconds (same time limit as problem set 5)? You should fill out the table and briefly discuss your findings, as well as why these algorithms perform the way they do given what we have discussed in lecture.
 
 \begin{center}
@@ -37,24 +40,199 @@ The purpose of this problem set is to develop skills in implementing graph algor
     & \multicolumn{1}{|p{2cm}|}{ISET BFS}
     & \multicolumn{1}{|p{2cm}|}{SAT Color}\\\hline
     \hline
-        \# Solvable Ring Instances &  &  & \\
-        \# Solvable Cluster Instances  &   & &  \\
-        \# Solvable Hard Graphs  &   & &  \\
-        \hline
-    \end{tabular}
+        \# Solvable Ring Instances & 0 & 6 & 6 \\
+        \# Solvable Cluster Instances & 0 & 16 & 18 \\
+        \# Solvable Hard Graphs  & 0 & 2 & 9 \\
+        \hline 
+    \end{tabular} \\
 \end{center}
 
-  \end{enumerate}
+    \textcolor{blue}{
+I considered each test within a graph type as an "instance." AKA, the number of instances equals the number of times I saw the name of each algorithm under each graph type after running the experiments file. The numbers in my table above reflect the number of "instances" that each algorithm was able to successfully able to generate the necessary graph within 10 seconds. \\ \\
+Exhaustive-Search 3-coloring performed awfully, not fulfilling a single test. This makes sense, though, as it runs in $O(3^n)$ time, but I was kind of surprised that there was no instance of the algorithm generating the necessary graph in time. \\ \\
+ISET-BFS 3-coloring performed much better than Exhaustive-Search 3-coloring. Even though it runs in $O(1.45^n)$ time, the smaller base of 1.45 means it runs significantly faster than Exhaustive-Search 3-coloring despite both being exponential. \\ \\
+SAT 3-Coloring performed the best out of the three algorithms. There wasn't a difference between the number of instances SAT and ISET-BFS worked within 10 seconds for Ring Instances, a marginal difference in Cluster Instances, and a relatively large difference in Hard Graphs. We can reduce 3-Coloring to CNF-Satisfiability in $O(n+3m)$ time (per Lecture 15 thm 4.1 where k=3). Forgetting about the runtime of the SAT solver/oracle itself for now, $O(n+3m)$ time is soooo much faster than exponential time. Thus, as long as the SAT solver is relatively fast (AKA not exponential), it would make sense that SAT 3-Coloring dominates the previous algorithms in terms of solvable instances within a certain time limit– especially on "Hard Graphs." I looked into Glucose3, and it seems like it's a pretty solid SAT solver based on the awards it has won at many SAT competitions.
+}
 
+  \end{enumerate}
 
 \item (Resolution) Use the algorithm \texttt{ResolutionInOrder} that we saw in Lecture 16 to decide the satisfiability of the following formulas, and use the algorithm \texttt{ExtractAssignment} to obtain a satisfying assignment for any that are satisfiable. (Please make sure to follow both algorithms \textit{exactly}, including the order in which the clauses are processed. A correct final solution that does not show all of the intermediate steps of both algorithms will not receive full score.)
   
   \begin{enumerate}
-      \item $\varphi(x_0, x_1, x_2, x_3) = (x_0 \vee x_1) \wedge (\neg x_2 \vee  x_1\vee x_3) \wedge (x_3 \vee \neg x_1) \wedge (\neg x_3) \wedge ( x_1 \vee  x_2)$.
+      \item $\varphi(x_0, x_1, x_2, x_3) = (x_0 \vee x_1) \wedge (\neg x_2 \vee  x_1\vee x_3) \wedge (x_3 \vee \neg x_1) \wedge (\neg x_3) \wedge (x_1 \vee  x_2)$. \\
 
-    \item $\varphi(x_0, x_1, x_2, x_3) = (x_0 \vee x_1 \vee \neg x_3) \wedge (x_2 \vee x_3) \wedge (x_0 \vee \neg x_2) \wedge (x_2)$.
+      \textbf{ResolutionInOrder} \\
 
-    \item $\varphi(x_0, x_1, x_2) = (x_0) \wedge (\neg x_0 \vee x_1 \vee x_2) \wedge (\neg x_1 \vee \neg x_2)$.
+      Vars: 
+
+      $i = 0$ \\
+      $f = 5$ \\
+      $g = 5$ \\
+
+      Starting Clauses:
+
+      $C_0 = (x_0 \vee x_1)$ \\
+      $C_1 = (\neg x_2 \vee  x_1\vee x_3)$ \\
+      $C_2 = (x_3 \vee \neg x_1)$ \\
+      $C_3 = (\neg x_3)$ \\
+      $C_4 = (x_1 \vee  x_2)$ \\
+
+
+      First iteration, resolving $C_0$ with the rest (not listing resolutions existing in our set of clauses): \\
+      $\diamond \; C_1 = C_5 = 1$ \\
+      $\diamond \; C_2 = C_6 = (x_0 \vee x_3)$ \\
+      \\
+      $g = 7$, $f=7$, $i=1$ \\
+
+      Second iteration, resolving $C_1$ with the rest (not listing resolutions existing in our set of clauses): \\
+      $\diamond \; C_2 = C_7 = (\neg x_2 \vee x_3)$ \\
+      $\diamond \; C_3 = C_{8} = (x_1 \vee \neg x_2 )$ \\
+      $\diamond \; C_4 = C_{9} = (x_1 \vee x_3)$ \\
+      \\
+      $g = 10$, $f=10$, $i=2$ \\
+
+      Third iteration, resolving $C_2$ with the rest (not listing resolutions existing in our set of clauses): \\
+      $\diamond \; C_3 = C_{10} = (\neg x_1)$ \\
+      $\diamond \; C_4 = C_{11} = (x_2 \vee x_3) $ \\
+      $\diamond \; C_9 = C_{12} = (x_3)$ \\
+      \\
+      $g = 13$, $f=13$, $i=3$ \\
+
+      Fourth iteration, resolving $C_3$ with the rest (not listing resolutions existing in our set of clauses) \\
+      $\diamond \; C_6 = C_{14} = (x_0)$ \\
+      $\diamond \; C_7 = C_{15} = (\neg x_2)$ \\
+      $\diamond \; C_9 = C_{16} = (x_1)$ \\
+      $\diamond \; C_{13} = C_{17} = \emptyset =$ FALSE \\
+
+      While using \texttt{ResolutionInOrder}, I ended up deriving the empty clause during my process of making clauses from the unique resolutions of other clauses with each other. Thus, the specific $\varphi$ in (a) is an \textbf{unsatisfiable CNF} since the empty clause is alway False.  \\
+   
+
+    \item $\varphi(x_0, x_1, x_2, x_3) = (x_0 \vee x_1 \vee \neg x_3) \wedge (x_2 \vee x_3) \wedge (x_0 \vee \neg x_2) \wedge (x_2)$. \\
+
+    \textbf{ResolutionInOrder} \\
+
+      Vars:
+      
+      $i = 0$ \\
+      $f = 4$ \\
+      $g = 4$ \\
+
+      Starting Clauses:
+
+      $C_0 = (x_0 \vee x_1 \vee \neg x_3) $ \\
+      $C_1 = (x_2 \vee x_3)$ \\
+      $C_2 = (x_0 \vee \neg x_2)$ \\
+      $C_3 = (x_2)$ \\
+
+      First iteration, resolving $C_0$ with the rest (not listing resolutions existing in our set of clauses) \\
+      $\diamond \; C_1 = C_4 = (x_0 \vee x_1 \vee x_2)$ \\
+      $\diamond \; C_2 = C_5 = 1$ \\
+      \\
+      $f=6$, $g = 6$, $i=1$ \\
+
+      Second iteration, resolving $C_1$ with the rest (not listing resolutions existing in our set of clauses) \\
+      $\diamond \; C_2 = C_6 = (x_0 \vee x_3) $ \\
+      \\
+      $f=7$, $g = 7$, $i=2$ \\
+
+      Third iteration, resolving $C_2$ with the rest (not listing resolutions existing in our set of clauses) \\
+      $\diamond \; C_3 = C_7 = (x_0)$ \\
+      $\diamond \; C_4 = C_8 = (x_0 \vee x_1)$ \\
+      \\
+      $f=9$, $g = 9$, $i=3$ \\
+
+      Fourth iteration, resolving $C_3$ with the rest (not listing resolutions existing in our set of clauses) \\
+      \\
+      $f=9$, $g = 9$, $i=4$ \\
+
+      Fifth iteration, resolving $C_4$ with the rest (not listing resolutions existing in our set of clauses) \\
+      \\
+      $f=9$, $g = 9$, $i=5$ \\
+      
+      Sixth iteration, resolving $C_5$ with the rest (not listing resolutions existing in our set of clauses) \\
+      \\
+      $f=9$, $g = 9$, $i=6$ \\
+
+      Seventh iteration, resolving $C_6$ with the rest (not listing resolutions existing in our set of clauses) \\
+      \\
+      $f=9$, $g = 9$, $i=7$ \\
+
+      Eighth iteration, resolving $C_7$ with the rest (not listing resolutions existing in our set of clauses) \\
+      \\
+      $f=9$, $g = 9$, $i=8$   $\checkmark$ \\
+
+      While using \texttt{ResolutionInOrder}, I ended up breaking out from the while loop once $i=8$ since there were only nine unique resolutions between clauses (orginal and new). Thus, the specific $\varphi$ in (b) is a \textbf{satisfiable CNF.} \\
+
+      \textbf{ExtractAssignment} \\
+
+      $x_0$: \\
+      $\alpha_0 = 1$, since $x_0$ is present in the set of clauses $\{ C_1 ... C_8 \}$. Letting $x_0 = 1$ and simplifying the clauses yields: \\
+      $C_0 = 1, C_1 = (x_2 \vee x_3), C_2 = 1, C_3 = (x_2), C_4 = 1, C_5 = 1, C_6 = 1, C_7 = 1, C_8 = 1$ \\
+
+      $x_1$: \\
+      $\alpha_1 = 0$, since $x_1$ is not present in the modified set of clauses $\{ C_1 ... C_8 \}$. Thus, our modified clauses don't change in this loop iteration. \\
+
+      $x_2$: \\
+      $\alpha_2 = 1$, since $x_2$ is present in the modified set of clauses $\{ C_1 ... C_8 \}$. Letting $x_2 = 1$ and simplifying the clauses yields: \\
+      $C_0 = 1, C_1 = 1, C_2 = 1, C_3 = 1, C_4 = 1, C_5 = 1, C_6 = 1, C_7 = 1, C_8 = 1$
+
+      $x_3$: \\
+      $\alpha_3 = 0$, since $x_3$ is not present in the modified set of clauses $\{ C_1 ... C_8 \}$. Thus, our modified clauses don't change in this loop iteration. \\
+
+      Aggregating the $\alpha_i$ assignments discovered through \texttt{ExtractAssignment}, I get that one such \textbf{satisfying assignment of our variables for this CNF is} $\alpha = [1,0,1,0]$. \\
+
+    \item $\varphi(x_0, x_1, x_2) = (x_0) \wedge (\neg x_0 \vee x_1 \vee x_2) \wedge (\neg x_1 \vee \neg x_2)$. \\
+
+   \textbf{ResolutionInOrder}  \\
+
+    Vars:
+      
+      $i = 0$ \\
+      $f = 3$ \\
+      $g = 3$ \\
+
+      Starting Clauses:
+
+      $C_0 = (x_0) $ \\
+      $C_1 = (\neg x_0 \vee x_1 \vee x_2)$ \\
+      $C_2 = (\neg x_1 \vee \neg x_2)$ \\
+
+      First iteration, resolving $C_0$ with the rest (not listing resolutions existing in our set of clauses) \\
+      $\diamond \; C_1 = C_3 = (x_1 \vee x_2)$ \\
+      $\diamond \; C_2 = C_4 = 1$ \\
+      \\
+      $f=5$, $g = 5$, $i=1$ \\
+
+      Second iteration, resolving $C_1$ with the rest (not listing resolutions existing in our set of clauses) \\
+      \text{\sout{$\diamond \; C_2 = C_5 = (\neg x_0 \vee x_2 \vee \neg x_2) = 1$} due to OR of a literal and its complement} \\
+      \\
+      $f= 5$, $g = 5$, $i=2$ \\
+
+      Third iteration, resolving $C_2$ with the rest (not listing resolutions existing in our set of clauses) \\
+      \text{\sout{$\diamond \; C_3 = C_5 = (x_2 \vee \neg x_2) = 1$} due to OR of a literal and its complement} \\
+      \\
+      $f= 5$, $g = 5$, $i=3$ \\
+
+      Fourth iteration, resolving $C_3$ with the rest (not listing resolutions existing in our set of clauses) \\
+       $f= 5$, $g = 5$, $i=4$   $\checkmark$ \\
+
+       While using \texttt{ResolutionInOrder}, I ended up breaking out from the while loop once $i=4$ since there were only five unique resolutions between clauses (orginal and new). Thus, the specific $\varphi$ in (c) is a \textbf{satisfiable CNF.} \\
+
+      \textbf{ExtractAssignment} \\
+
+      $x_0$: \\
+      $\alpha_0 = 1$, since $x_0$ is present in the set of clauses $\{ C_1 ... C_4 \}$. Letting $x_0 = 1$ and simplifying the clauses yields: \\
+      $C_0 = 1, C_1 = (x_1 \vee x_2), C_2 = (\neg x_1 \vee \neg x_2), C_3 = (x_1 \vee x_2), C_4 = 1$ \\
+
+      $x_1$: \\
+      $\alpha_1 = 1$, since $x_1$ is present in the set of clauses $\{ C_1 ... C_4 \}$. Letting $x_1 = 1$ and simplifying the clauses yields: \\
+      $C_0 = 1, C_1 = 1, C_2 = (\neg x_2), C_3 = 1, C_4 = 1$ \\
+
+      $x_2$: \\
+      $\alpha_2 = 0$, since $x_2$ is not present in the set of clauses $\{ C_1 ... C_4 \}$. Letting $x_2 = 0$ and simplifying the clauses yields: \\
+      $C_0 = 1, C_1 = 1, C_2 = 1, C_3 = 1, C_4 = 1$ \\
+
+      Aggregating the $\alpha_i$ assignments discovered through \texttt{ExtractAssignment}, I get that one such \textbf{satisfying assignment of our variables for this CNF is} $\alpha = [1,1,0]$. \\
 
   \end{enumerate}
 
@@ -73,10 +251,107 @@ Unfortunately, unlike matching in graphs, there is no polynomial-time algorithm 
 
 Optionally, justify why the reduction can be implemented in time $O(m^2)$ (this can be part of an attempt at an R+ on this problem, but is not required for full credit).
 
-Thus, even though the fastest known algorithms for 3dCompleteMatching run in exponential time, we can use SAT Solvers to solve it much more efficiently on many instances that arise in practice. 
+Thus, even though the fastest known algorithms for 3dCompleteMatching run in exponential time, we can use SAT Solvers to solve it much more efficiently on many instances that arise in practice. \\
+
+\textbf{Preprocessing: } \\
+
+The goal of preprocessing is to get our CNF $\varphi$ that is only satisfiable when $\exists$ A set $M$ of hyperedges such that every vertex is in at most one hyperedge in $M$, and every vertex in $V_0$ is in a hyperedge in $M$. \\
+
+Let there be $m$ binary variables $\{x_0,x_1,...,x_{m-1}\}$, one for each $e \in E$. $x_i = 1$ if the corresponding hyperedge $i$ is in the matching (and = 0 if not). \\
+
+Initialize an empty set $M$, which we will add hyperedges to as we find a satisfying matching. \\
+
+We need to address constraints of $M$ by making the following clauses in our CNF: \\
+
+\begin{enumerate}
+    \item No Overlap: No vertices in any of the disjoint finite sets $V_0,V_1,V_2$ are contained in more than one hyperedge in $M$. We can express this as a series of all clauses of form $(\neg x_i \vee \neg x_j)$, where $x_i$ is a hyperedge in $E$ and $x_j$ is a hyperedge in $E$ that contains at least one of the same vertices as in $x_i$. The clauses will only be true when our matching $M$ doesn't contain overlapping hyperedges $x_i$ and $x_j$ (since $0 \vee 1 = 1)$. \\
+    \item $V_0$ Prioritization: $\forall v \in V_0, v \in V(M)$ (AKA all vertices in $V_0$ are contained in the set of hyperedges $M$). We can express this as a series of all clauses of form $(x_0 \vee x_1 \vee x_2 \vee x_{c_{v}-1})$, where $\{x_0, x_1, x_2, ..., x_{c_{v}-1}\}$ is the set of hyperedges that all contain a particular $v \in V_0$ and $c_v$ is the number of such clauses for that particular $v$. (NOTE: empty clauses are OK, as they just mean false and will rightfully lead to a $\bot$ output when we feed our CNF into the SAT solver). This process will be done for each $v \in V_0$, and the clauses will only be true when $M$ contains all $v \in V_0$ (since $0 \vee 0 \vee ... \vee 1 \vee 0 \vee ...  = 1$). \\
+\end{enumerate}
+
+Let us define a variable $\varphi$, which is our CNF that is only satisfiable when a set $M$ exists (as specified above) and is found by taking the "AND" of all the possible types of clauses (as specified above) present in the 3-uniform hypergraph. \\
 
 
-\item (optional) Come up with a polynomial-time reduction for the version of 3dMatching where we are also given a number $k\in \N$ as part of the input and want to find a matching of size $k$ (rather than one of size $|V_0|$).  (Hint: you will probably want to use more than $m$ boolean variables, at least $k\cdot m$, possibly more, depending on how you approach the problem.)
+\textbf{Oracle: } \\
+
+Use a SAT solver on $\varphi$ and obtain $\alpha$ if there is a satisfying assignment, which is of form $\{0,1\}^m$ with $\alpha_i = 1$ telling us that hyperedge $x_i \in M$. \\
+
+
+\textbf{Postprocessing:} \\
+
+If there's no possible satisfying assignment mechanism $\alpha$ for $\varphi$, return $\bot$. Theoretically the SAT solver itself will just return $\bot$ in the scenario but I'm not sure if I can assume that so I'm just saying it here. \\
+
+Loop over each value in $\alpha$. if $\alpha[i] = \alpha_i = 1$, add hyperedge $x_i$ to the set $M$. \\
+
+Return $M$. \\
+
+\textbf{Correctness: } \\
+
+To prove correctness, I'll go over two important attributes of this reduction: \\
+
+By our lemmas for reductions, we know that if 3dCompleteMatching $\leq$ SAT, then $\exists$ a solution $s$ for 3dCompleteMatching $\Rightarrow$ $\exists$ a solution $s'$ for SAT. This lemma explicitly tells us that we'll only output $\bot$ when there's no solution for 3dCompleteMatching in our 3-uniform graph. \\
+
+If the oracle returns $\alpha'$ for SAT, postprocessing returns a valid $s$ for 3dCompleteMatching. By the way we defined our CNF $\varphi$, it will only be satisfiable when there exists a set $M$ of hyperedges that don't contain any of the same vertices (no overlaps), and in the aggregate span all the vertices in $V_0$ ($V_0$ prioritization). These are the only two conditions we need to check to ensure $M$ is a valid set of hyperedges. If our oracle returns an $\alpha'$, we know that there exists a satisfying assignment of inclusion/exclusion in $M$ for our variables $\{x_0,x_1,...,x_{m-1}\}$ according to $\varphi$. Thus, including each hyperedge $x_i$ for which $\alpha'_i = 1$ gives us a set $M$ of hyperedges that has no overlaps and includes all vertices in $V_0$ as required. \\
+
+\textbf{Runtime and Clause Count Analysis:} \\
+
+Preprocessing: making $m$ binary variables and initializing an empty set takes $O(m + 1)$ time. Making our \textit{overlap addressing clauses} requires us to make $O(m^2)$ clauses of size 2 and thus takes $O(m^2)$ time since there's up to $\binom{m}{2}$ pairs of "overlapping" hyperedges in a worst case scenario where every hyperedge overlaps with every other hyperedge. Making our \textit{priority addressing clauses} requires us to make $O(n)$ clauses and takes $O(n+m)$ time since we have to iterate over each of the up to $n$ vertices in $V_0$ and make a clause checking its inclusion in $M$, and there will be a total of $m$ literals in these $n$ clauses since every hyperedge contain exactly one vertex from $V_0$. Thus, preprocessing gives us $O(n + m^2)$ clauses and takes time $O(m+1+m^2+n+m)=O(n+m^2)$. \\
+
+Oracle: the oracle query runs on a CNF input $\varphi$ using $m$ variables (implemented in my reduction) and $O(n + m^2)$ clauses (proven above) as required. It takes O(1) time in the reduction runtime. \\
+
+Postprocessing: Looping over each $\alpha_i$ in $\alpha$ takes $O(m)$ time since there's $m$ variables for which we have satisfying assignments of. It takes a constant number of steps in each loop iteration to add $x_i$ to the set $M$ or not add it depending on the binary value of $\alpha_i$. So, postprocessing takes $O(m)$ time \\
+
+Aggregating, we get that this reduction of 3dCompleteMatching to SAT requires $O(n + m^2)$ clauses and takes $O(n + m^2) + O(1) + O(m) = O(n + m^2)$ time. \\
+
+\textbf{Justification for reduction running in time} $O(m^2)$: \\
+
+We know $m \geq |V_0|$ in any 3-uniform hypergraph with a 3dCompleteMatching, otherwise there's no way all the vertices in $V_0$ would be included in the matching. We also know we must iterate over all vertices in $V_0$ when constructing \textit{prioritization clauses} that check for their presence in $M$. So, in the worst case scenario where all $n$ vertices are in $V_0$ (leading to degenerate hyperedges and us needing to make more $V_0$ \textit{prioritization clauses}), we would have $m \geq n \geq |V_0|$. Since we know that in the worst case scenario $n = O(m)$, we can deduce that $n + m^2 = O(m + m^2) = O(m^2)$, meaning our reduction actually runs in time $O(m^2)$. \\
+
+\item (optional) Come up with a polynomial-time reduction for the version of 3dMatching where we are also given a number $k\in \N$ as part of the input and want to find a matching of size $k$ (rather than one of size $|V_0|$).  (Hint: you will probably want to use more than $m$ boolean variables, at least $k\cdot m$, possibly more, depending on how you approach the problem.) \\
+
+\textbf{Preprocessing: } \\
+
+The goal of preprocessing is to get our CNF $\varphi$ that is only satisfiable when $\exists$ A set of $k$ hyperedges $\in E$ that are non overlapping. \\
+
+Let's initialize $k \cdot m$ binary variables of the form $x_{i,j}$, with $0 \leq i \leq k-1$ and $0 \leq j \leq m-1$. Note that all $x_{i,j}$ and $x_{i^*, j}$, where $i \ne i^*$, represent the same hyperedges in our 3-uniform hypergraph. The presence of $i$ is just there to help us with bookkeeping while we make our CNF $\varphi$ in a way that ensures we find a matching of size $k$ if there is one. \\
+
+Let's also initialize an empty set $K$ that we will later add our $k$ disjoint hyperedges to if possible. \\
+
+We need to address constraints of $M$ by making the following clauses in our CNF: \\
+
+\begin{enumerate}
+    \item At Least: for each possible value of $i$, at least one $x_{i,j}$ equals one. Otherwise, there's a chance $|K| < k$. We can express this idea as a series of clauses $(x_{i,0} \vee x_{i,1} \vee ... \vee x_{i,m-1})$, which will only be true if at least one $x_{i,j} = 1$ for a particular value of $i$.
+    \item At Most: for each possible value of $i$, no more than one $x_{i,j}$ equals one. Otherwise, there's a chance $|K| > k$. We can express this idea as a series of all clauses with form $(\neg x_{i,j^*} \vee \neg x_{i,j})$ where we have $j^* \neq j$. The intuition with these clauses is that they will only all be true when there's no more than one $x_{i,j} = 1$ for a possible value of $i$ (otherwise we would have a $0 \vee 0 = 0$).
+    \item Uniqueness: for each possible value of $j$, no more than one $x_{i,j} = 1$. Otherwise, we could have a situation where we're adding the same hyperedge to our set $K$ multiple times, which would lead to us NOT ACTUALLY having a matching of size $k$. We can express this idea as a series of all clauses with form $(\neg x_{i^*,j} \vee \neg x_{i,j})$ where we have $i^* \ne i$ (otherwise we would have a $0 \vee 0 = 0$).
+    \item No Overlap: No vertices in any of the disjoint finite sets $V_0,V_1,V_2$ are contained in more than one hyperedge in $K$. This part is similar to (a), however now we just need to modify our clauses to fit the structure of this problem. We can ensure there's no overlapping hyperedges in our matching by adding to the CNF clauses of the form $(\neg x_{i,j} \vee \neg x_{i^*,j^*})$ for all values of $i, i^*$ and all $j,j^*$ such that $i \ne i^*, j \ne j^*$ and hyperedges $x_j$ and $x_{j^*}$ (per my notation of variables in part (a)) contain at least one identical vertex. (I know $x_j$ and $x_{j^*}$ don't exist in this implementation, but I'm just using this notation analagously to part (a) to give the idea of how an overlap looks like because both $x_{i,j}, x_{i^*,j^*}$ being in the matching leads to a clause $0 \vee 0 = 0$ that demonstrates the invalidity of such a scenario occurring). \\
+\end{enumerate}
+
+Let us define a variable $\varphi$, which is our CNF that is only satisfiable when a matching of size $k$ exists (as specified above) and is found by taking the "AND" of all the possible types of clauses (as specified above) present in the 3-uniform hypergraph. \\
+
+\textbf{Oracle: }
+
+Use a SAT solver on $\varphi$ and obtain $\alpha$ if there is a satisfying assignment of $k$ hyperedges being in our matching, which is of form $\{0,1\}^{m \times k}$ with $\alpha_{i,j} = 1$ telling us that hyperedge $x_{i,j}$ is in our matching of size $k$. (Or in other words using the implementation from part (a) for intuition, $x_i$ is in our matching and is the $j^{th}$ hyperedge that's determined to be part of our $k$-sized matching. \\
+
+\textbf{Postprocessing: }
+
+Iterate over $\alpha$ row by row, column by column. For every $\alpha_{i',j'} = 1$, add $x_{i',j'}$ to the set $K$. \\
+
+Return $K$. \\
+
+\textbf{Correctness: } \\
+
+The only changes I needed to make for this part compared to (a) was adjusting the size of our matching to be $k$ instead of $|V_0|$. By using clauses that ensure that no duplicate hyperedges will be added to the set $K$ and that, for each $i$, at least one and no more than one $x_{i,j}$ is in our matching, I've ensured $\varphi$ is only satisfiable when there exists a matching with exactly $k$ unique hyperedges. Makinf sure there's no vertices contained by multiple hyperedges in $k$ is a common condition with (a), and I just modified the clauses to reflect the alternate structure of the variables in (b). \\
+
+Read the proof of correctness in (a) for why an output of $\bot$ is correct. As for why any solution found is correct, the intuition is similar. Any solution here reflects a satisfying assignment for $\varphi$, which means that there's a set of $k$ disjoint hyperedges in the 3-uniform hypergraph. Only including hyperedges $x_{i',j'}$ to the matching where $\alpha'_{i',j'} = 1$ in a satisfying assignment matrix $\alpha'$ ensures that $K$ will contain $k$ hyperedges that don't overlap on any vertices. \\
+
+\textbf{Runtime Analysis: } \\
+
+Preprocessing: Initializing an empty set and creating $k \cdot m$ binary variables takes time $O(km)$. Ensuring at least one $x_{i,j} = 1$ for each value of $i$ requires $k$ clauses of size $m$, so setting up those clauses takes $O(km)$ time. Ensuring no more than one $x_{i,j} = 1$ for each value of $i$ requires $k \cdot \binom{m}{2}$ clauses of size 2, so setting up those clauses takes $O(km^2)$ time. Ensuring we don't have a situation where both $x_{i,j} = 1$ and $x_{i^*,j} = 1$ requires $m \cdot \binom{k}{2}$ clauses of size 2, so setting up those clauses takes $O(mk^2)$ time. Ensuring no vertices are contained by more than one hyperedge in $K$ requires $O(\binom{km}{2})$ clauses if each hyperedge overlaps with every other hyperedge, so setting up those clauses takes $O(k^2m^2)$ time. Aggregating, we get that preprocessing takes $O(km) + O(km)+ O(km^2) +O(mk^2) + O(k^2m^2) = O(k^2m^2)$ time. \\
+
+Oracle: Takes $O(1)$ time as is standard in reductions \\
+
+Postprocessing: Looping over each $\alpha_{i,j}$ in $\alpha$ takes $O(km)$ iterations since there's $k \cdot m$ variables for which we have satisfying assignments of. It takes a constant number of steps in each loop iteration to add $x_{i,j}$ to the set $K$ or not add it depending on the binary value of $\alpha_{i,j}$. So, postprocessing takes $O(km)$ time. \\
+
+Aggregating, we get that the reduction takes $O(k^2m^2) + O(1) + O(km) = O(k^2m^2)$ time, which is polynomial time with respect to both $m$ and $k$. Thus, my reduction from this modified version of 3dMatching to SAT is a valid polynomial-time reduction! $\checkmark$ \\
 
 \end{enumerate}
 
