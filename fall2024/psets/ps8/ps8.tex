@@ -8,16 +8,16 @@
 \psHeader{8}{Wed Nov. 20, 2024 (11:59pm)}
 
 
-\textbf{Your name: }
+\textbf{Your name: Roshen Chatwal}
 
-\textbf{Collaborators and External Resources (please cite all collaborators, and any resources or tools that you used outside of the core course resources, which are lectures, sections, SREs, office hours, earlier problem sets and their solutions):}
+\textbf{Collaborators and External Resources (please cite all collaborators, and any resources or tools that you used outside of the core course resources, which are lectures, sections, SREs, office hours, earlier problem sets and their solutions): ChatGPT for conceptual advice}
 
 \vspace{0.1in}
 
 
-\textbf{No. of late days used on previous psets: }
+\textbf{No. of late days used on previous psets: 2}
 
-\textbf{No. of late days used after including this pset: }
+\textbf{No. of late days used after including this pset: 3}
 
 
 \vspace{0.2in}
@@ -27,10 +27,38 @@
 \begin{enumerate}
     \item (Complexity Classes and Reductions)  
     \begin{enumerate}
-        \item Consider the computational problem $\Pi = (\Inputs,\Outputs,f)$ where $\Inputs=\Outputs=\N$ and $f(x)=\N$ for all $x\in \N$.  Show that $\Pi\in \Psearch$ but $\Pi\notin \NPsearch$.  Thus, $\Psearch\nsubseteq\NPsearch$.
+        \item Consider the computational problem $\Pi = (\Inputs,\Outputs,f)$ where $\Inputs=\Outputs=\N$ and $f(x)=\N$ for all $x\in \N$.  Show that $\Pi\in \Psearch$ but $\Pi\notin \NPsearch$.  Thus, $\Psearch\nsubseteq\NPsearch$. \\
+
+        $\Pi \in \Psearch$: \\
+
+        Let $x$ be a natural number input of bitwise length $n$. To solve $\Pi$ using a Word-RAM program, we can simply output 1 as the solution to every input $x$. This takes $O(n^0) = O(1)$ time, thus meaning $\Pi \in \Psearch$ since the runtime is polynomial wrt the bitwise length of $x$. \\
+
+        $\Pi \notin \NPsearch$: \\
+
+        Let $x$ be a natural number input of bitwise length $n$. There exists a valid output that's a natural number of bitwise length $2^n$, per the given $f(x)$. A key condition for a problem to be in $\NPsearch$ is that all valid outputs in $f(x)$ are of polynomial length wrt the length of $x$. However, there's \textbf{no} polynomial function $p$ such that $2^n \leq p(n)$ for large $n$ since $c^n = O(n^d)$ for $c>1$ and $d\geq0$. Thus, $\Pi \notin \NPsearch$. \\
         
         \item  Prove that if 
-$\Pi\leq_p \Gamma$ and $\Gamma\in \EXPsearch$, then $\Pi\in \EXPsearch$. (In other words, $\EXPsearch$ is closed under polynomial-time reductions.) 
+$\Pi\leq_p \Gamma$ and $\Gamma\in \EXPsearch$, then $\Pi\in \EXPsearch$. (In other words, $\EXPsearch$ is closed under polynomial-time reductions.) \\
+
+If $\Pi\leq_p \Gamma$, we know the runtime of the reduction is upper bounded by time $O(n^c)$ for $c\geq0$ and inputs of bitwise length $n$. I will go through Preprocessing, Oracle Call(s), and Postprocessing in a Word-RAM Program solving $\Pi$ by using the $\Gamma$ oracle. I will then prove why the runtime of the algorithm solving $\Pi$ is exponential, assuming $\Gamma \in \EXPsearch$. \\
+
+\textbf{Preprocessing:} \\
+
+Preprocessing helps us convert an input for $\Pi$ into an input for $\Gamma$. In a Word-RAM program with word size $w$, we can write at most $w$ bits of memory in one time step. Thus, in a polynomial time reduction, the most we can write to memory is $O(w \cdot n^c)$ bits when the original input size is $n$. Typically we observe $w \leq n$, but even in the less common case where $w > n$, we know $w = O(n + n^c) = O(n^c)$. This bound holds because both input and intermediate structures are processed, and their combined size cannot exceed $O(n^c)$ in a polynomial time reduction– otherwise, simply reading or writing the data would take more than $O(n^c)$ time. This means any input into the oracle for $\Gamma$ is of bitwise length $O(wn^c)=O(n^c \cdot n^c) = O(n^2c)$. \\
+
+\textbf{Oracle Call(s):} \\
+
+We can make $O(n^c)$ oracle calls in this polynomial time reduction since each call takes $O(1)$ time in the reduction. \\
+
+\textbf{Postprocessing:} \\
+
+Combined with preprocessing pre and postprocessing together must take $O(n^c)$ time. \\
+
+\textbf{Why runtime of the algorithm solving $\Pi$ is exponential, assuming $\Gamma \in \EXPsearch$:} \\
+
+With our assumption about $\Gamma$, the algorithm solving it takes $O(2^{n^d})$ time for some $d\geq 0$. With an input size $O(n^{2c})$, the algorithm for $\Gamma$ can take $O(2^{{n^{2c}}^d}) = O(2^{n^{2cd}})$. \\
+
+The total runtime of the algorithm solving $\Pi$ is $(\texttt{pre/postprocessing runtime}) + (\texttt{number of calls}) \times (\texttt{Oracle algo runtime for input made in preprocessing})$. Plugging in values from above, we see it takes time $O(n^c) + O(n^c)O(2^{n^{2cd}}) = O(2^{n^{2cd}})$, indicating that $\Pi \in \EXPsearch$. \\
 
     \end{enumerate}
 
@@ -41,12 +69,124 @@ $\Pi\leq_p \Gamma$ and $\Gamma\in \EXPsearch$, then $\Pi\in \EXPsearch$. (In oth
         {An assignment $\alpha\in\zo^n$ such that $\varphi(\alpha)=1$ and $\varphi(\neg \alpha)=1$ (if one exists), where $\neg \alpha$ is the bitwise negation of $\alpha$}
 %\anurag{Add `if exists'?}
         \begin{enumerate}
-        \item Prove that Flip-4-SAT is $\NPsearch$-complete by reduction from 3-SAT.  (Hint: Add one new variable $y$ and replace each 3-SAT clause $(\ell_0 \vee \ell_1 \vee \ell_2)$ by $(\ell_0 \vee \ell_1 \vee \ell_2 \vee y)$.)
+        \item Prove that Flip-4-SAT is $\NPsearch$-complete by reduction from 3-SAT.  (Hint: Add one new variable $y$ and replace each 3-SAT clause $(\ell_0 \vee \ell_1 \vee \ell_2)$ by $(\ell_0 \vee \ell_1 \vee \ell_2 \vee y)$.) \\
+
+        For Flip-4-SAT to be $\NPsearch$-complete, we need to prove that Flip-4-SAT $\in \NPsearch$ and that Flip 4-SAT is $\NPsearch$-hard. \\
+
+        Flip-4 SAT $\in \NPsearch$: \\
+
+        For a 4-CNF with $n$ variables and $m$ clauses, the maximum size of the 4-CNF is $4m = O(m)$ (where each clause has four vairables). $m = \binom{2n}{4} + \binom{2n}{3} + \binom{2n}{2} + \binom{2n}{1} + \binom{2n}{0}= O(n^4)$, since there's two potential assignments for each variable and we're picking at most 4 of them per clause. A valid output of Flip-4 SAT is of size $n$, which is polynomial wrt input size $O(n^{4}) \checkmark$. Checking whether $\alpha$ and $\alpha'$ are satisfiable takes $O(2m) = O(2n^4)$ time, which is polynomial with respect to input size $O(n^4)$, since we just input each of the variable assignments in $\alpha$ into the CNF and repeat for $\neg \alpha \checkmark$. Thus both output length and verification time are polynomial wrt input size. \\
+
+        Flip 4-SAT is $\NPsearch$-hard: we will prove this by showing 3-SAT $\leq_p$ Flip 4-SAT. \\
+
+        \textbf{Preprocess:} \\
+
+        Make a 4-CNF formula from the 3-CNF input of 3-SAT. We can do this by adding the same literal $y$ to each 3-CNF clause until the length of each clause is 4 literals. This should take $O(m)$ time, considering we're adding a constant number of $y$ literals to each 3-CNF clause. Now we have a 4-CNF $\varphi'(x_0,...,x_{n-1},y)$. \\
+
+        \textbf{Oracle:} \\
+
+        Call the oracle for Flip 4-SAT on $\varphi'$ to get an $\alpha$. This takes $O(1)$ time. \\
+
+        \textbf{Postprocessing:} \\
+
+        Return $\bot$ if the oracle for Flip 4-SAT didn't find a valid satisfying assignment $\alpha$. \\
+
+        If $\alpha[n]$ (the assignment for $y$) equals zero: \\
+            return $\alpha[:n]$ \\
+            
+        Elif $\alpha[n]$ (the assignment for $y$) equals one: \\
+            return $\neg \alpha[:n]$ \\
+
+        This takes at worst $O(n)$ time since it takes $O(1)$ steps to check the assignment of $y$ and $O(n)$ time to negate and return the first $n$ assignments in $\alpha$. \\
+
+        \textbf{Correctness (2 parts):} \\
+
+        1. If $\exists$ a solution $\alpha$ to 3-SAT, there must exist a solution $\alpha'$ to Flip-4-SAT. This is because our 4-CNF $\varphi'$ that we created in preprocessing is equivalent to the 3-CNF input for 3-SAT when $\alpha_y=0$ since if assign $y$ to $0$ and simplify the 4-CNF, we just get the original 3-CNF input. Thus, $\alpha' = \alpha[:n]$ when when $\alpha'[n] = 0$, otherwise $\alpha' = \neg \alpha[:n]$ when $\alpha'[n] = 0$. $\checkmark$ \\
+
+        2. If we get a valid solution $\alpha'$ from the Flip-4-SAT oracle, there must be a mapping from $\alpha' \Rightarrow \alpha$, where $\alpha$ is a satisfying assignment for 3-SAT. We see this is also true. We know $\alpha'$ and $\neg \alpha'$ are both satisfying assignments for Flip-4-SAT. Thus, we're guaranteed to have either $\alpha'[n] = 0$ or $\neg \alpha'[n] = 0$ (AKA the literal $y$ is guaranteed to be assigned to zero in one satisfying assignment for Flip-4-SAT). Per our reasoning before, the satisfying assignment whose $\alpha_y = 0$ is also a satisfying assignment for the 3-CNF input into Flip-3-SAT, so we simply extract the assignment array $\alpha = \alpha'[:n]$ (for the $\alpha'$ where $\alpha'[n] = 0$) to be our solution to 3-SAT. $\checkmark$ \\
+
+        \textbf{Polynomial runtime of reduction justification:} \\
+
+        Per my logic of runtime in each step in the reduction, the total runtime of the reduction takes time $O(n) + O(1) + O(m) = O(n + m) = O(n+ n^4) = O(n^4)$ which is polynomial wrt input size $O(n^4)$, so the reduction is indeed a polynomial time reduction $\checkmark$. \\
 
         \item Flip 4-SAT can be reduced to Flip-3-SAT by the same method we used to reduce SAT to 3-SAT, and thus Flip 3-SAT is also $\NPsearch$-complete.  Using this fact, 
-        prove that Graph 3-Coloring is $\NPsearch$-complete. (Hint: use the same construction as we used in the reduction from 3-SAT to IndependentSet, except add one extra vertex that's connected to all of the variable-gadget-vertices.)
+        prove that Graph 3-Coloring is $\NPsearch$-complete. (Hint: use the same construction as we used in the reduction from 3-SAT to IndependentSet, except add one extra vertex that's connected to all of the variable-gadget-vertices.) \\
 
-        \item (optional) Fill in the omitted details of the reduction from Flip-4-SAT to Flip-3-SAT, with its proof of correctness.
+        For Graph 3-Coloring to be $\NPsearch$-complete, we need to prove that Graph 3-Coloring $\in \NPsearch$ and that Graph 3-Coloring is $\NPsearch$-hard. \\
+
+        Graph 3-Coloring $\in \NPsearch$: \\
+
+        An input graph $G$ to Graph 3-Coloring with $n$ nodes and $m = O(n^2)$ edges is of size $O(n+m) = O(n^2)$. A valid output of graph 3-coloring is $\bot$ or a graph $G'$ of size $n$ nodes and $m$ edges, which are both polynomial wrt the input size (there's simply now a color attribute attached to each node in $G'$ which keeps total size $O(n+m) = O(n^2)$) $\checkmark$. Verifying that a solution $G'$ is a valid 3-coloring of $G$ takes $O(m) = O(n^2)$ time, which is also polynomial wrt the input size, since we need to examine each edge and make sure neighbors are different colors $\checkmark$. Since output size and verification runtime are both polynomial wrt input size, Graph 3-Coloring $\in \NPsearch$! \\
+
+        Graph 3-Coloring is $\NPsearch$-hard: we will prove this by showing Flip 3-SAT $\leq_p$ Graph 3-Coloring. \\
+
+        \textbf{Preprocess:} \\
+
+        For the Flip 3-CNF input $\varphi$ with $n$ variables and $m = O(\binom{2n}{3}) = O(n^3)$ clauses, ensure each clause has exactly 3 literals. This can be done by repeating an arbitrary literal in a clause of size 1 or 2 until that clause is of size 3 (it remains logically equivalent since its simplification is the orginal version of the clause seen in $\varphi$). If there's an empty clause present we can simply return $\bot$ immediately since we know $\varphi$ will be unsatisfiable. \\
+        
+        With the (potentially) updated 3-CNF $\varphi'$ where each clause is of size 3, we can form a graph $G$ akin to the one we formed when reducing Flip 3-SAT to IndependentSet. We can form $m$ clause gadgets, which will all be rings of size 3 containing the literals in each clause, and $n$ dumbell variable gadgets connecting a literal and its negation. Like in the reduction to IndependentSet, we make edges between each node-literal in every clause gadget to the node-literal in the variable gadget corresponding to its nedgation. Per the hint, after all this, we can add a new freestanding node-literal $y$ to $G$, and then make an edge between the node-literal for $y$ and EVERY node-literal in the variable gadgets. \\
+
+        \textbf{Oracle:} 
+        
+        Call the oracle for Graph 3-Coloring on $G$ to get either $\bot$ or a 3-colored graph $G'$. \\
+
+        \textbf{Postprocessing:} \\
+
+        If the oracle gave us $\bot$, return $\bot$. \\
+        
+        If the oracle gave us a $G'$, here's what we do. Look at the color of the node-literal for $y$, and call that color 2. Name the remaining two colors in $G'$ colors 0 or 1, arbitrarily. \\
+
+        Initialize an empty assignment array $\alpha$ of size $n$, where $n$ is the number of variables in the original 3-CNF. \\
+
+        Now, all we do is examine the coloring scheme of the dumbell variable gadgets. Iterating over each dumbell edge, we make assignments to ensure the variable assigned to color 1 is true. (i.e. let's say we have a variable gadget where the node-literal $x_c$ is color 0 and the node-literal $\neg x_c$ is color 1. Then, we make $\alpha_c = 0$. If we had the reverse where the node-literal $x_c$ is color 1 and the node-literal $\neg x_c$ is color 0, we make $\alpha_c = 1$). Insert this assignment into the correct location of the assignment array, $\alpha[c]$ for all $0 \leq c \leq n$. \\
+
+        Return $\alpha$. \\
+
+        \textbf{Proof of Correctness:} \\
+
+        1. If there exists a solution $\alpha$ to Flip 3-SAT, there must exist a solution $G'$ to Graph 3-Coloring. A solution to Flip 3-SAT requires a variable assignment such that for each clause, at least one literal (or its negation) is assigned $0$, and at least one literal (or its negation) is assigned $1$. If a variable assignment for the 3-CNF assigns the same truth value to all literals in a clause, making it invalid for Flip 3-SAT (e.g., if the original 3-CNF input had a singleton clause with a single literal), the clause gadget in $G$ would introduce sufficient conflict edges to require more than $3$ colors for a valid graph coloring. \\
+        Additionally, based on the construction of $G$, the graph is 3-colorable if and only if there is a satisfying Flip 3-SAT assignment. This is because the graph enforces consistency between variables and their negations. Specifically: 
+        \begin{itemize}
+            \item If there exists a variable $x_c$ such that $\alpha[c] = \neg \alpha[c]$ (AKA $\alpha$ isn't a solution to Flip 3-SAT), the corresponding node literals for $x_c$ and $\neg x_c$ in $G$ would need to be assigned the same color. However, this is impossible because $x_c$ and $\neg x_c$ are neighbors in the variable gadget dumbbells, which explicitly require different colors.
+        \end{itemize} 
+        Thus, there is a valid 3-coloring of $G$ if and only if there is a satisfying assignment $\alpha$ for Flip 3-SAT, as the graph structure directly enforces all constraints of the Flip 3-SAT problem. \\
+
+        2. If we get a valid solution $G'$ from the Graph 3-Coloring oracle, there must be a mapping from $G' \Rightarrow \alpha$, where $\alpha$ is a satisfying assignment for Flip 3-SAT. This is basically what we did in postprocessing, ensuring that we make assignments for $\alpha_c = 1$ when the $x_c$ node-literal was of color 1 (and 0 when it's of color 0). The reason that this is a valid assignment is because each clause gadget in $G'$ has at least one node-literal of color 0 and at least one node-literal of color 1, so when we take $\neg \alpha$ we're essentially just swapping the colors of the node-literals colored 0 and 1 (which preserves there being at least one "true" literal in each clause). Also, due to the consistency in $G'$ of the $x_c$ and $\neg x_c$ node literals always having distinct colors, we'll never run into any invalid assignment situations where there exists a $c$ such that $\alpha[c] = \neg \alpha[c]$. \\
+
+        \textbf{Polynomial runtime of reduction justification:} \\
+        
+        Preprocessing: Adjusting the 3-CNF to have clauses of strictly size 3 takes $O(m) = O(n^3)$ time and making the graph takes $O(n+m) = O(n^3)$ time, so preprocessing take $O(n^3)$ time. \\
+        Oracle call takes $O(1)$ time \\
+        Postprocessing takes $O(n)$ time since we have to look at the $n$ variable gadgets and make assignments according to the coloring. \\
+
+        Thus, the reduction takes $O(n^3) + O(1) + O(n) = O(n^3)$ time, which is polynomical wrt input size of Flip 3-SAT $O(m) = O(n^3)$. \\
+
+        \item (optional) Fill in the omitted details of the reduction from Flip-4-SAT to Flip-3-SAT, with its proof of correctness. \\
+
+        \textbf{Preprocess:} \\
+        
+        Make the 4-CNF input to Flip-4-SAT have clauses of strictly size 4 (takes $O(m) = O(\binom{2n}{4}) = O(n^4)$ time when there's $n$ variables and $m$ clauses). \\
+
+        Like when reducing SAT to 3-SAT, for each clause $i$ of form $(\ell_0 \vee \ell_1 \vee \ell_2 \vee \ell_3)$ in the 4-CNF $\varphi$ we (potentially) derived, break it into two clauses of form $(\ell_0 \vee \ell_1 \vee y_i)$ and $(\ell_2 \vee \ell_3 \vee \neg y_i)$ where $y_i$ is a new variable uniquely made for preserving the logic of clause $i$. This takes $O(m) = O(n^4)$ time to do over all $m$ clauses. Call our resulting 3-CNF $\varphi'$. \\
+
+        \textbf{Oracle:} \\
+
+        Call the oracle that solves Flip 3-SAT on $\varphi'$ \\
+
+        \textbf{Postprocessing:} \\
+
+        if the oracle returns $\bot$, return $\bot$. Otherwise, if the oracle returns $\alpha'$, return $\alpha$ where $\alpha = \alpha'[:n]$. This takes $O(n)$ time. \\
+
+        \textbf{Proof of Correctness}: \\
+
+        1. If there exists a solution $\alpha$ to Flip 4-SAT, there must exist a solution $\alpha'$ to Flip 3-SAT. This is true because we can express a 4-CNF equivalently with a 3-CNF by introducing new $y_i$ variables. By breaking a clause into two clauses, all that's needed for satisfiability is for the two clauses to each have a variable that's True. This is equivalent to the 4-CNF because if the solution $\alpha$ dictates that none of the original literals in one of the two clauses we created are True, then we can simply create an $\alpha'$ that sets $\alpha_{y_i}$ (didn't know how else to notate the assignment of $y_i$) to a truth value that makes both of the two clauses true. \\
+
+        2. If we get a valid solution $\alpha'$ from the Flip 3-SAT oracle, there must be a mapping from $\alpha' \Rightarrow \alpha$, where $\alpha$ is a satisfying assignment for Flip 4-SAT. All we do here is return the assignments of the first $n$ variables (corresponding to the original variables of the 4-CNF), which is valid because for there to be a satisfying assignment because it means there's at least one true literal and one false literal in each of the original 4-CNF clauses. The Flip 3-SAT oracle wouldn't have returned an $\alpha'$ if that weren't the case because then one of the two subclauses created in preprocessing would've been 3 literals all with the same truth value (which we know can't happen in a valid assignment for Flip 3-SAT). \\
+
+        \textbf{Polynomial runtime of reduction justification:} \\
+
+        Aggregating runtimes for pre/postprocessing and the oracle call, the reduction takes time $O(n^4) + O(n^4) O(1) + O(n) = O(n^4)$, which is polynomial wrt 4-SAT input size $O(n^4).$ \\
+        
         \end{enumerate}
         
  \item (Reductions between variants of LongPath) 
@@ -58,14 +198,102 @@ $\Pi\leq_p \Gamma$ and $\Gamma\in \EXPsearch$, then $\Pi\in \EXPsearch$. (In oth
  \end{itemize}
 
 \begin{enumerate}
-\item In the Sipser text, it is proven that LongPath-Decision is $\NP$-complete.  Using this and other theorems from lecture, show that LongPath $\leq_p$ LongPath-Decision. 
+\item In the Sipser text, it is proven that LongPath-Decision is $\NP$-complete.  Using this and other theorems from lecture, show that LongPath $\leq_p$ LongPath-Decision. \\
 
-\item Prove that LongestPath $\leq_p$ LongPath.  Be sure to prove correctness and analyze the correctness of the reduction you provide.  (Hint: do not limit yourself to mapping reductions.)
+\textbf{LongPath $\in \text{NPsearch}$:}
 
-\item Explain briefly why we also have LongPath-Decision $\leq_p$ LongestPath. Thus, all three problems are reducible to each other in polynomial time, and if any one is in $\Psearch$, they all are in $\Psearch$.
+The outputted path for LongPath is of length $O(n)$, which is polynomial with respect to the input size $O(n + m) = O(n^2)$, where $m = O(n^2)$. Verification of the path takes $O(n)$ time, as it involves examining $O(n)$ edges to ensure that:
+\begin{enumerate}
+    \item The path exists in the graph.
+    \item The path starts at $s$, ends at $t$, and has the required length $\geq k$. \\
+\end{enumerate}
+
+\textbf{Reduction from LongPath to LongPath-Decision:}
+
+Since it is proven in the Sipser text that $\text{LongPath-Decision}$ is NP-complete, and given the theorem that every problem $\Pi \in \text{NPsearch}$ reduces to every NP-complete problem $\Gamma$, it follows that $\text{LongPath} \leq_p \text{LongPath-Decision}$. The detailed reduction process involves iteratively using $\text{LongPath-Decision}$ on transformed graphs between neighbors of the current vertest and $t$ to construct a solution for LongPath. \\
+
+By establishing that LongPath is in $\text{NPsearch}$ and using the fact that $\text{LongPath-Decision}$ is NP-complete, I've shown that $\text{LongPath} \leq_p \text{LongPath-Decision}$. \\
+
+
+\item Prove that LongestPath $\leq_p$ LongPath.  Be sure to prove correctness and analyze the correctness of the reduction you provide.  (Hint: do not limit yourself to mapping reductions.) \\
+
+\textbf{Preprocess:} \\
+
+Take input $G, s, t$. Initialize a variable $k=0$ and an empty list called "path". \\
+
+\textbf{Oracle:} \\
+
+While $k \leq n$: 
+\begin{enumerate}
+    \item Let temp = the result of the LongPath Oracle on $G, s, t, k$
+    \item If temp $\neq \bot$: 
+        \begin{enumerate}
+            \item append tempt to the list "path" 
+        \end{enumerate}
+    \item $k+=1$ \\
+\end{enumerate}
+
+\textbf{Postprocess:} \\
+
+Return the last path (most recently added path) in the "path" list if it exists, and return $\bot$ if there's no paths in the "path" list.  \\
+
+\textbf{Correctness:} \\
+
+The reduction uses LongPath on $G, s, t$ for increasing values of $k$ all the way up to $n$ and stores any such paths that exist in increasing order of minimum length. Thus, the last path in the "path" array will be of maximum length if there is one. No path can be longer than the final path in the "path" list because if there were one for a minimum length $k'$, then LongPath would've worked as well when $k=k'$. \\
+
+\textbf{Runtime Analysis:} \\
+
+Preprocessing takes $O(1)$ time. There are $O(n)$ oracle calls because the maximum path length is $n$, and each loop iteration takes $O(1)$ time since the oracle takes $O(1)$ time and there's a constant number of steps to append paths to "path" and increment $k$. Postprocessing takes $O(1)$ time to just pop off the last path in "path" if there is one or $\bot$ if there isn't. \\
+
+Thus, the total reduction time is $O(1) + O(n) \cdot (O(1) + O(1)) = O(1) + O(n) = O(n)$, which is polynomical wrt the size of the input $G,s,t$ which is of size $O(n+m)=O(n^2)$ Thus, LongestPath $\leq_p$ LongPath. \\
+
+\item Explain briefly why we also have LongPath-Decision $\leq_p$ LongestPath. Thus, all three problems are reducible to each other in polynomial time, and if any one is in $\Psearch$, they all are in $\Psearch$. \\
+
+For this reduction, we can simply run the LongestPath oracle on $G,s,t$. \\ 
+
+If the oracle returns $\bot$, we say "no" as the answer to LongPath-Decision because no path of at least length $k$ exists between $s,t$ if there's no path between $s,t$. \\
+
+If the oracle returns a path $p$, we simply allow a variable $n_p$ to equal the length of the path $p$. All we need to do now is compare $n_p$ to $k$. If $n_p \geq k$, we say "yes" as the answer to LongPath-Decision because there exists a path of least length $k$ between $s,t$. If $n_p$ < $k$, we say "no" as the answer to LongPath-Decision because the longest path between $s,t$ is not of at least length $k$.  \\
+
+Runtime analysis: No preprocessing. LongestPath oracle call takes $O(1)$ time and postprocess comparing output path length (if there is one) to $k$ to determine the LongPath-Decision answer also takes $O(1)$. So, the runtime of the reduction is $O(1)$ which is polynomial wrt input size $O(n+m)=O(n^2)$. \\
+
 
 \item (optional) Without using $\NP$-completeness, give a direct proof that LongPath $\leq_p$ LongPath-Decision.
-(Hint: Try to use the LongPath-Decision oracle to figure out the first edge to follow from the start vertex $s$.)
+(Hint: Try to use the LongPath-Decision oracle to figure out the first edge to follow from the start vertex $s$.) \\
+
+\textbf{Preprocess:} \\
+
+Input is $G,s,t,k$ \\
+Initialize array $P = [s]$ \\
+Intialize a variable $u=s$ \\
+
+\textbf{Oracle:} \\
+
+While $|P| < k$:
+\begin{enumerate}
+    \item Focus on vertex $u$ and iterate over each of its neighbors $v$. For each $v$ in the set of neighbors of $u$:
+    \begin{enumerate}
+        \item If LongestPath-Decision($v,t,k - |P|$) is yes: \\
+                - append $v$ to $P$ \\
+                - set $u = v$ \\
+                - go back to line $i$
+        \item break from while loop \\
+    \end{enumerate}
+\end{enumerate}
+
+\textbf{Postprocessing:} \\
+
+Look at the array $P$. Check if the first vertex is $s$, the last one is $t$, and calculate $|P|$ and check if that's at least $k$. If these are all so, return $P$. Otherwise, return $\bot$. \\
+
+\textbf{Correctness:} \\
+
+The way my reduction works, I only add vertices to my path if they're on a path between $s,t$ of length at least $k$. We know if they're on such a path by calling the LongestPath-Decision oracle on the Graph between that vertex $v$ and the final vertex $t$ on a path of at least length $k -$ the current distance traveled. If the while loop runs all the way through, we will have ended uo traversing all the vertices in the path between $s,t$ of length at least $k$. If it breaks, it means there isn't a path between $s,t$ of length $k$, and postprocessing ensures sure correct starting/ending vertices and $|P| \geq k$ when returning $P$. Otherwise $P$ is not a valid solution and there doesn't exist a valid solution to LongPath. LongPath-Decision would've said "yes" on at least one of the final vertex in P's neigbors and added that neighbor vertex $n$ to $P$ instead while continuing to traverse the graph finding a path between $s,t$ of at least length $k$. \\
+
+\textbf{Polynomial Runtime Justification:} \\
+
+Preprocessing takes $O(1)$ time to initialize some variables. The Oracle while-loop leads to a total of $O(k)$ oracle calls, where we assume $k = O(n)$. Within each loop iteration, it takes a constant number of steps to add $v$ to our path $P$. So the total oracle activity takes $O(n)$ time. Postprocessing takes $O(1)$ time since we just use a constant number steps to check whether $P$ fits the starting, ending, and size parameters needed to be a valid solution of LongPath($G,s,t,k$). Overall the reduction takes $O(1) + O(n) + O(1) = O(n)$ time, which is polynomial wrt the length of the input graph, vertices, and digit k that has length of $O(n+m)=O(n^2)$. \\
+
+
 \end{enumerate}
 
 \item (reflection) Describe one theoretical idea from this course that you have found beautiful, and explain why it is beautiful to you.  Your answer should: (1) explain the idea in a way that could be understood by a classmate who has taken classes cs20 and cs50 but has not yet taken this class and (2) address how this beauty is similar to or different from other kinds of beauty that human beings encounter.
